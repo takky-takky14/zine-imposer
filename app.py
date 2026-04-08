@@ -211,8 +211,8 @@ with left_col:
 
 with right_col:
     st.subheader("設定")
-    gutter_mm = st.number_input("ノド余白（mm）", min_value=0.0, max_value=30.0, value=6.0, step=1.0)
-    outer_margin_mm = st.number_input("外側余白（mm）", min_value=0.0, max_value=30.0, value=5.0, step=1.0)
+    gutter_mm = st.number_input("ノド余白（mm）", min_value=0.0, max_value=30.0, value=0.0, step=0.1)
+    outer_margin_mm = st.number_input("外側余白（mm）", min_value=0.0, max_value=30.0, value=0.0, step=0.1)
     auto_pad_blank = st.toggle("4の倍数になるよう白紙を自動追加", value=True)
 
 if uploaded_file is not None:
