@@ -89,11 +89,8 @@ def merge_page_into_slot(
     slot_y: float,
     slot_w: float,
     slot_h: float,
+    align: str = "center",   # "center" / "inner"
 ):
-    """
-    src_page を slot に収まるよう縮小・平行移動して配置する。
-    ここでは回転なし（A5縦をA4横の左右半分に置く想定）。
-    """
     src_w, src_h = get_page_size(src_page)
 
     scale = min(slot_w / src_w, slot_h / src_h)
@@ -101,8 +98,19 @@ def merge_page_into_slot(
     placed_w = src_w * scale
     placed_h = src_h * scale
 
-    tx = slot_x + (slot_w - placed_w) / 2
+    # 縦方向は中央
     ty = slot_y + (slot_h - placed_h) / 2
+
+    # 横方向の配置
+    if align == "inner-left":
+        # 左ページ用：右端をノド側に合わせる
+        tx = slot_x + (slot_w - placed_w)
+    elif align == "inner-right":
+        # 右ページ用：左端をノド側に合わせる
+        tx = slot_x
+    else:
+        # 従来どおり中央寄せ
+        tx = slot_x + (slot_w - placed_w) / 2
 
     transform = Transformation().scale(scale).translate(tx, ty)
     dest_page.merge_transformed_page(src_page, transform)
@@ -171,7 +179,7 @@ def impose_pdf(
                 left_page = reader.pages[placement.left]
             else:
                 left_page = create_blank_like(first_w, first_h)
-            merge_page_into_slot(dest_page, left_page, left_slot_x, slot_y, slot_w, slot_h)
+            merge_page_into_slot(dest_page, left_page, left_slot_x, slot_y, slot_w, slot_h, align="inner-left")
 
         # 右ページ
         if placement.right is not None:
@@ -179,7 +187,7 @@ def impose_pdf(
                 right_page = reader.pages[placement.right]
             else:
                 right_page = create_blank_like(first_w, first_h)
-            merge_page_into_slot(dest_page, right_page, right_slot_x, slot_y, slot_w, slot_h)
+            merge_page_into_slot(dest_page, right_page, right_slot_x, slot_y, slot_w, slot_h, align="inner-right")
 
     output = io.BytesIO()
     writer.write(output)
