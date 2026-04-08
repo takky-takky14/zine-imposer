@@ -199,9 +199,9 @@ def format_page_number(index: Optional[int], original_count: int) -> str:
 # =========================
 # Streamlit UI
 # =========================
-st.set_page_config(page_title="ZINE 面付けPDFジェネレーター", layout="wide")
+st.set_page_config(page_title="Zine Imposer", layout="wide")
 
-st.title("ZINE 面付けPDFジェネレーター")
+st.title("Zine Imposer")
 st.caption("A5縦の単ページPDFをアップロードすると、中綴じ用のA4横PDFを生成します。")
 
 left_col, right_col = st.columns([1.4, 1])
