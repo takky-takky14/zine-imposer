@@ -189,9 +189,6 @@ def impose_pdf(
                 right_page = create_blank_like(first_w, first_h)
             merge_page_into_slot(dest_page, right_page, right_slot_x, slot_y, slot_w, slot_h, align="inner-right")
 
-    if flip_back_side and (i + 1) % 2 == 0:
-    dest_page.rotate(180)
-
     output = io.BytesIO()
     writer.write(output)
     output.seek(0)
