@@ -167,27 +167,47 @@ def impose_pdf(
     # 白紙ページのサイズは、元PDFの1ページ目と同サイズに合わせる
     first_w, first_h = get_page_size(reader.pages[0])
 
-    for placement in placements:
-        dest_page = writer.add_blank_page(
-            width=A4_LANDSCAPE_WIDTH,
-            height=A4_LANDSCAPE_HEIGHT,
+    for i, placement in enumerate(placements):
+    dest_page = writer.add_blank_page(
+        width=A4_LANDSCAPE_WIDTH,
+        height=A4_LANDSCAPE_HEIGHT,
+    )
+
+    # 左ページ配置
+    if placement.left is not None:
+        if placement.left < original_count:
+            left_page = reader.pages[placement.left]
+        else:
+            left_page = create_blank_like(first_w, first_h)
+        merge_page_into_slot(
+            dest_page,
+            left_page,
+            left_slot_x,
+            slot_y,
+            slot_w,
+            slot_h,
+            align="inner-left",
         )
 
-        # 左ページ
-        if placement.left is not None:
-            if placement.left < original_count:
-                left_page = reader.pages[placement.left]
-            else:
-                left_page = create_blank_like(first_w, first_h)
-            merge_page_into_slot(dest_page, left_page, left_slot_x, slot_y, slot_w, slot_h, align="inner-left")
+    # 右ページ配置
+    if placement.right is not None:
+        if placement.right < original_count:
+            right_page = reader.pages[placement.right]
+        else:
+            right_page = create_blank_like(first_w, first_h)
+        merge_page_into_slot(
+            dest_page,
+            right_page,
+            right_slot_x,
+            slot_y,
+            slot_w,
+            slot_h,
+            align="inner-right",
+        )
 
-        # 右ページ
-        if placement.right is not None:
-            if placement.right < original_count:
-                right_page = reader.pages[placement.right]
-            else:
-                right_page = create_blank_like(first_w, first_h)
-            merge_page_into_slot(dest_page, right_page, right_slot_x, slot_y, slot_w, slot_h, align="inner-right")
+    # 面付け後PDFの 2,4,6...ページ目だけ 180度回転
+    if (i + 1) % 2 == 0:
+        dest_page.rotate(180)
 
     output = io.BytesIO()
     writer.write(output)
